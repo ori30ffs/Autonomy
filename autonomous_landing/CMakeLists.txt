@@ -12,11 +12,11 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 add_executable(${PROJECT_NAME}_node src/main.cpp) 
 target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})
 
-add_executable(${PROJECT_NAME}_node_2 src/offb_node.cpp) 
-target_link_libraries(${PROJECT_NAME}_node_2 ${catkin_LIBRARIES})
+add_executable(gazebo_simulation_landing src/offb_node.cpp) 
+target_link_libraries(gazebo_simulation_landing ${catkin_LIBRARIES})
 
 add_executable(camera_node src/camera_node.cpp) 
 target_link_libraries(camera_node ${catkin_LIBRARIES})
 
-
-
+add_executable(aruco_node src/aruco_simple.cpp) 
+target_link_libraries(aruco_node ${catkin_LIBRARIES})

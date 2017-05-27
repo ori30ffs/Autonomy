@@ -6,9 +6,15 @@
 
 #include "geometry_msgs/Vector3Stamped.h"
 #include "std_msgs/Float64.h"
+
 mavros_msgs::State current_state;
+geometry_msgs::PoseStamped pose;
 void state_cb(const mavros_msgs::State::ConstPtr& msg){
     current_state = *msg;
+}
+void pose_cb(const geometry_msgs::PoseStamped::ConstPtr& msg){
+    pose = *msg;
+    std::cout<<pose.pose<<std::endl;
 }
 
 int main(int argc, char **argv)
@@ -17,6 +23,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     ros::Subscriber state_sub = nh.subscribe<mavros_msgs::State>("mavros/state", 10, state_cb);
+    ros::Subscriber pose_sub = nh.subscribe<geometry_msgs::PoseStamped>("/autonomy_landing/marker_pose", 10, pose_cb);
     ros::Publisher local_pos_pub = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
     ros::ServiceClient arming_client = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
     ros::ServiceClient set_mode_client = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
@@ -42,7 +49,7 @@ int main(int argc, char **argv)
     double v_norm=sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
     double theta=0.0;
     /*************************************************************************/
-    geometry_msgs::PoseStamped pose;
+
     pose.pose.position.x = 0;
     pose.pose.position.y = 0;
     pose.pose.position.z = 4;
@@ -73,7 +80,7 @@ int main(int argc, char **argv)
             if( set_mode_client.call(offb_set_mode) &&
                 offb_set_mode.response.success)
             {
-                ROS_INFO("Offboard enabled");
+                ROS_INFO("Offboard enabled!");
             }
             last_request = ros::Time::now();
         }
@@ -83,7 +90,7 @@ int main(int argc, char **argv)
             {
                 if( arming_client.call(arm_cmd) &&
                     arm_cmd.response.success){
-                    ROS_INFO("Vehicle armed");
+                    ROS_INFO("Vehicle armed!");
                     move = 1;
                 }
                 last_request = ros::Time::now();
@@ -126,6 +133,9 @@ int main(int argc, char **argv)
                 ROS_INFO("x= %lf y= %lf", x, y);
                 last_request = ros::Time::now();
             }*/
+            //pose.pose.position.x += .1;
+    		//pose.pose.position.y += .1;
+    		//pose.pose.position.z = 4;
         }
 
         local_pos_pub.publish(pose);
